@@ -1,0 +1,40 @@
+name: scratch bump
+
+scms:
+  scratch:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      owner: mallendem
+      repository: updatecli-singlebranch-scratch
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      commitusingapi: true
+      branch: main
+      force: false
+      singleBranch: {{ env "SINGLE_BRANCH" | default "true" }}
+
+actions:
+  default:
+    kind: github/pullrequest
+    scmid: scratch
+    spec:
+      automerge: false
+      title: 'scratch: bump version'
+
+sources:
+  counter:
+    name: changing value
+    kind: shell
+    spec:
+      command: date +%s%N
+
+targets:
+  version:
+    name: update version.yaml
+    kind: yaml
+    scmid: scratch
+    sourceid: counter
+    spec:
+      file: version.yaml
+      key: $.version
